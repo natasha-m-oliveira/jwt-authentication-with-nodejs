@@ -3,11 +3,20 @@ const usuariosControlador = require("./usuarios-controlador");
 
 module.exports = (app) => {
   app
+    .route("/usuario/refresh")
+    .post(middlewaresAutenticacao.refresh, usuariosControlador.login);
+
+  app
     .route("/usuario/login")
     .post(middlewaresAutenticacao.local, usuariosControlador.login);
+
   app
     .route("/usuario/logout")
-    .get(middlewaresAutenticacao.bearer, usuariosControlador.logout);
+    .post(
+      [middlewaresAutenticacao.refresh, middlewaresAutenticacao.bearer],
+      usuariosControlador.logout
+    );
+
   app
     .route("/usuario")
     .post(usuariosControlador.adiciona)
