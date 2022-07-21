@@ -25,12 +25,18 @@ module.exports = {
         if (err && err.name === "JsonWebTokenError") {
           return res.status(401).json({ message: err.message });
         }
+        if (err && err.name === "TokenExpiredError") {
+          return res
+            .status(401)
+            .json({ message: err.message, expiredAt: err.expiredAt });
+        }
         if (err) {
           return res.status(500).json({ message: err.message });
         }
         if (!usuario) {
           return res.status(401).json();
         }
+        req.token = info.token;
         req.user = usuario;
         return next();
       }
