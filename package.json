@@ -9,9 +9,16 @@
   },
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
+    "dotenv": "^16.0.1",
     "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
     "nodemon": "^2.0.2",
-    "sqlite3": "^4.1.1"
+    "passport": "^0.6.0",
+    "passport-http-bearer": "^1.0.1",
+    "passport-local": "^1.0.0",
+    "redis": "^4.2.0",
+    "sqlite3": "^5.0.9"
   }
 }

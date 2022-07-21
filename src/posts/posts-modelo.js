@@ -1,5 +1,5 @@
-const postsDao = require('./posts-dao');
-const validacoes = require('../validacoes-comuns');
+const postsDao = require("./posts-dao");
+const validacoes = require("../validacoes-comuns");
 
 class Post {
   constructor(post) {
@@ -13,11 +13,11 @@ class Post {
   }
 
   valida() {
-    validacoes.campoStringNaoNulo(this.titulo, 'título');
-    validacoes.campoTamanhoMinimo(this.titulo, 'título', 5);
+    validacoes.campoStringNaoNulo(this.titulo, "título");
+    validacoes.campoTamanhoMinimo(this.titulo, "título", 5);
 
-    validacoes.campoStringNaoNulo(this.conteudo, 'conteúdo');
-    validacoes.campoTamanhoMaximo(this.conteudo, 'conteúdo', 140);
+    validacoes.campoStringNaoNulo(this.conteudo, "conteúdo");
+    validacoes.campoTamanhoMaximo(this.conteudo, "conteúdo", 140);
   }
 
   static lista() {
