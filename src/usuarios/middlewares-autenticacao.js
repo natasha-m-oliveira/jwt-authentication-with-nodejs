@@ -61,4 +61,24 @@ module.exports = {
       return res.status(500).json({ message: err.message });
     }
   },
+
+  async verificacaoEmail(req, res, next) {
+    try {
+      const { token } = req.params;
+      const id = await tokens.verificacaoEmail.verifica(token);
+      const usuario = await Usuario.buscaPorId(id);
+      req.user = usuario;
+      next();      
+    } catch (err) {
+      if (err && err.name === "JsonWebTokenError") {
+        return res.status(401).json({ message: err.message });
+      }
+      if (err && err.name === "TokenExpiredError") {
+        return res
+          .status(401)
+          .json({ message: err.message, expiredAt: err.expiredAt });
+      }
+      return res.status(500).json({ message: err.message });
+    }
+  },
 };
