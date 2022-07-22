@@ -2,8 +2,8 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const BearerStrategy = require("passport-http-bearer").Strategy;
 const bcrypt = require("bcrypt");
-const Usuario = require("./usuarios-modelo");
-const { InvalidArgumentError } = require("../erros");
+const Services = require("./services/Services");
+const { InvalidArgumentError } = require("./erros");
 const tokens = require("./tokens");
 
 function verificaUsuario(usuario) {
@@ -28,11 +28,12 @@ passport.use(
     },
     async (email, senha, done) => {
       try {
-        const usuario = await Usuario.buscaPorEmail(email);
-        verificaUsuario(usuario);
-        await verificaSenha(senha, usuario.senhaHash);
+        const usuario = new Services("usuarios");
+        const data = await usuario.getOneRecord({ email });
+        verificaUsuario(data);
+        await verificaSenha(senha, data.senhaHash);
 
-        done(null, usuario);
+        done(null, data);
       } catch (err) {
         done(err);
       }
@@ -44,8 +45,9 @@ passport.use(
   new BearerStrategy(async (token, done) => {
     try {
       const id = await tokens.access.verifica(token);
-      const usuario = await Usuario.buscaPorId(id);
-      done(null, usuario, { token });
+      const usuario = new Services("usuarios");
+      const data = await usuario.getOneRecord({ id });
+      done(null, data, { token });
     } catch (err) {
       done(err);
     }

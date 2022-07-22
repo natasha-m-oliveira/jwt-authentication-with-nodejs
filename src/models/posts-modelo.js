@@ -1,15 +1,13 @@
-const postsDao = require("./posts-dao");
+const postsDao = require("../services/PostServices");
 const validacoes = require("../validacoes-comuns");
 
 class Post {
   constructor(post) {
+    this.id = post.id;
     this.titulo = post.titulo;
     this.conteudo = post.conteudo;
+    this.autor = post.autor;
     this.valida();
-  }
-
-  adiciona() {
-    return postsDao.adiciona(this);
   }
 
   valida() {
@@ -20,8 +18,25 @@ class Post {
     validacoes.campoTamanhoMaximo(this.conteudo, "conteúdo", 140);
   }
 
-  static lista() {
-    return postsDao.lista();
+  adiciona() {
+    return postsDao.adiciona(this);
+  }
+
+  static listaTodos() {
+    return postsDao.listaTodos();
+  }
+
+  static async listaPorAutor(id, idAutor) {
+    const post = await postsDao.listaPorAutor(id, idAutor);
+    if (!post) {
+      return null;
+    }
+
+    return new Post(post);
+  }
+
+  remove() {
+    return postsDao.remove(this);
   }
 }
 
