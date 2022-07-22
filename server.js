@@ -2,6 +2,7 @@ const express = require("express");
 const routes = require("./src/routes");
 require("dotenv").config();
 require("./database");
+require("./src/estrategias-autenticacao");
 require("./redis/blocklist-access-token");
 require("./redis/allowlist-refresh-token");
 
