@@ -1,5 +1,5 @@
-const { promisify } = require("util");
-const db = require("../../database");
+const { promisify } = require('util');
+const db = require('../../database');
 
 class Services {
   constructor(modelName) {
@@ -13,12 +13,12 @@ class Services {
   async getAllRecords(where = {}) {
     const fields = Object.keys(where)
       .map((key) => `${key} = ?`)
-      .join(", AND ");
+      .join(', AND ');
     const values = Object.values(where);
     if (fields.length && values.length) {
       return this.#dbAll(
         `SELECT * FROM ${this.modelName} WHERE ${fields}`,
-        values
+        values,
       );
     }
     return this.#dbAll(`SELECT * FROM ${this.modelName}`);
@@ -27,30 +27,30 @@ class Services {
   async getOneRecord(where = {}) {
     const fields = Object.keys(where)
       .map((key) => `${key} = ?`)
-      .join(", AND ");
+      .join(', AND ');
     const values = Object.values(where);
 
     return this.#dbGet(
       `SELECT * FROM ${this.modelName} WHERE ${fields} LIMIT 1`,
-      values
+      values,
     );
   }
 
   async createRecord(data = {}) {
-    const fields = Object.keys(data).join(", ");
+    const fields = Object.keys(data).join(', ');
     const values = Object.values(data);
 
     return this.#dbRun(
       `INSERT INTO ${this.modelName} (${fields}) 
         VALUES (?, ?, ?, ?)`,
-      values
+      values,
     );
   }
 
   async updateRecord(newData = {}, id = 0) {
     const fields = Object.keys(newData)
       .map((key) => `${key} = ?`)
-      .join(", ");
+      .join(', ');
     const values = Object.values(newData);
 
     return this.#dbRun(`UPDATE ${this.modelName} SET ${fields} WHERE id = ?`, [
@@ -62,7 +62,7 @@ class Services {
   async deleteRecord(where = {}) {
     const fields = Object.keys(where)
       .map((key) => `${key} = ?`)
-      .join(", AND ");
+      .join(', AND ');
     const values = Object.values(where);
 
     return this.#dbRun(`DELETE FROM ${this.modelName} WHERE ${fields}`, values);

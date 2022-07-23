@@ -1,11 +1,11 @@
-const Usuario = require("../models/Usuario");
-const Services = require("./Services");
-const tokens = require("../tokens");
-const { EmailVerificacao } = require("../emails");
+const Usuario = require('../models/Usuario');
+const Services = require('./Services');
+const tokens = require('../tokens');
+const { EmailVerificacao } = require('../emails');
 
 class UsuarioServices extends Services {
   constructor() {
-    super("usuarios");
+    super('usuarios');
   }
 
   geraEndereco(rota, token) {
@@ -16,7 +16,7 @@ class UsuarioServices extends Services {
   async createRecord({ nome, email, senha }) {
     const alreadyRegistered = await super.getOneRecord({ email });
     if (alreadyRegistered) {
-      throw new InternalServerError("E-mail já cadastrado.");
+      throw new InternalServerError('E-mail já cadastrado.');
     }
     const usuario = new Usuario({ nome, email, senha, emailVerificado: false });
     await usuario.valida();
@@ -25,7 +25,7 @@ class UsuarioServices extends Services {
     usuario.setId(id);
 
     const token = tokens.verificacaoEmail.cria(usuario.id);
-    const endereco = this.geraEndereco("/usuario/verifica-email/", token);
+    const endereco = this.geraEndereco('/usuario/verifica-email/', token);
     const emailVerificacao = new EmailVerificacao(usuario, endereco);
     emailVerificacao.enviaEmail().catch(console.log);
   }

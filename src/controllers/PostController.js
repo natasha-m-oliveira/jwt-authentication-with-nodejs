@@ -1,11 +1,32 @@
-const Post = require("../models/posts-modelo");
-const { InvalidArgumentError, InternalServerError } = require("../erros");
+const { InvalidArgumentError, InternalServerError } = require('../erros');
+const { PostServices } = require('../services');
+const postServices = new PostServices();
 
-module.exports = {
-  async adiciona(req, res) {
+class PostController {
+  static async getAllPosts(req, res) {
     try {
-      const post = new Post(req.body);
-      await post.adiciona();
+      const posts = await postServices.getAllRecords();
+      res.json(posts);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  }
+
+  static async getPostsByUsuario(req, res) {
+    try {
+      const autor = req.user.id;
+      const posts = await postServices.getAllRecords({ autor });
+      res.json(posts);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  }
+
+  static async createPost(req, res) {
+    try {
+      const autor = req.user.id;
+      const { titulo, conteudo } = req.body;
+      await postServices.createRecord({ titulo, conteudo, autor });
 
       res.status(201).send(post);
     } catch (err) {
@@ -17,34 +38,31 @@ module.exports = {
         res.status(500).json({ message: err.message });
       }
     }
-  },
+  }
 
-  async lista(req, res) {
+  static async updatePost(req, res) {
     try {
-      const posts = await Post.listaPorAutor(req.user.id);
-      res.send(posts);
-    } catch (err) {
-      return res.status(500).json({ message: err.message });
-    }
-  },
+      const id = req.params.id;
+      const newData = req.body;
 
-  async obterDetalhes(req, res) {
-    try {
-      const post = await Post.buscaPorId(req.params.id, req.user.id);
-      res.json(post);
+      await postServices.updateRecord(newData, id);
+      res.send();
     } catch (err) {
-      return res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
-  },
+  }
 
-  async remover(req, res) {
+  static async deletePost(req, res) {
     try {
-      const post = await Post.buscaPorId(req.params.id, req.user.id);
-      post.remover();
-      res.status(204);
-      res.end();
+      await postServices.deleteRecord({
+        id: req.params.id,
+        autor: req.user.id,
+      });
+      res.send();
     } catch (err) {
-      return res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
-  },
-};
+  }
+}
+
+module.exports = PostController;

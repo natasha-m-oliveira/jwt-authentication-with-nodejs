@@ -1,9 +1,9 @@
-const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
-const moment = require("moment");
-const { InvalidArgumentError } = require("./erros");
-const allowlistRefreshToken = require("../redis/allowlist-refresh-token");
-const blocklistAccessToken = require("../redis/blocklist-access-token");
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const moment = require('moment');
+const { InvalidArgumentError } = require('./erros');
+const allowlistRefreshToken = require('../redis/allowlist-refresh-token');
+const blocklistAccessToken = require('../redis/blocklist-access-token');
 
 function criaTokenJWT(id, [tempoQuantidade, tempoUnidade]) {
   const payload = { id };
@@ -32,7 +32,7 @@ function invalidaTokenJWT(token, blocklist) {
 }
 
 async function criaTokenOpaco(id, [tempoQuantidade, tempoUnidade], allowlist) {
-  const tokenOpcao = crypto.randomBytes(24).toString("hex");
+  const tokenOpcao = crypto.randomBytes(24).toString('hex');
   const dataExpiracao = moment().add(tempoQuantidade, tempoUnidade).unix();
   await allowlist.adiciona(tokenOpcao, id, dataExpiracao);
   return tokenOpcao;
@@ -63,8 +63,8 @@ function verificaTokenEnviado(token, nome) {
 
 module.exports = {
   access: {
-    nome: "Access token",
-    expiracao: [15, "m"],
+    nome: 'Access token',
+    expiracao: [15, 'm'],
     lista: blocklistAccessToken,
     cria(id) {
       return criaTokenJWT(id, this.expiracao);
@@ -77,8 +77,8 @@ module.exports = {
     },
   },
   refresh: {
-    nome: "Refresh token",
-    expiracao: [5, "d"],
+    nome: 'Refresh token',
+    expiracao: [5, 'd'],
     lista: allowlistRefreshToken,
     cria(id) {
       return criaTokenOpaco(id, this.expiracao, this.lista);
@@ -91,8 +91,8 @@ module.exports = {
     },
   },
   verificacaoEmail: {
-    nome: "Token de verificação de e-mail",
-    expiracao: [1, "h"],
+    nome: 'Token de verificação de e-mail',
+    expiracao: [1, 'h'],
     cria(id) {
       return criaTokenJWT(id, this.expiracao);
     },

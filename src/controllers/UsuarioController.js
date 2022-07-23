@@ -1,8 +1,17 @@
-const { InvalidArgumentError, InternalServerError } = require("../erros");
-const { UsuarioServices } = require("../services");
+const { InvalidArgumentError, InternalServerError } = require('../erros');
+const { UsuarioServices } = require('../services');
 const usuarioServices = new UsuarioServices();
 
 class UsuarioController {
+  static async getAllUsuarios(req, res) {
+    try {
+      const usuarios = await usuarioServices.getAllRecords();
+      res.json(usuarios);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  }
+
   static async createUsuario(req, res) {
     const { nome, email, senha } = req.body;
     try {
@@ -19,20 +28,11 @@ class UsuarioController {
     }
   }
 
-  static async getAllUsuarios(req, res) {
-    try {
-      const usuarios = await usuarioServices.getAllRecords();
-      res.json(usuarios);
-    } catch (err) {
-      res.status(500).json({ message: err.message });
-    }
-  }
-
   static async validateEmail(req, res) {
     try {
       const { id } = req.user;
       await usuarioServices.validateEmail(id);
-      res.status(200).json();
+      res.json();
     } catch (err) {
       res.status(500).json({ message: err.message });
     }
@@ -40,8 +40,8 @@ class UsuarioController {
 
   static async deleteUsuario(req, res) {
     try {
-      // await usuarioServices.deleteRecord({ id: req.params.id });
-      res.status(200).send();
+      await usuarioServices.deleteRecord({ id: req.params.id });
+      res.send();
     } catch (erro) {
       res.status(500).json({ erro: erro });
     }

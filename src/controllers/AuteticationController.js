@@ -3,7 +3,7 @@ class AuteticationController {
     try {
       const accessToken = tokens.access.cria(req.user.id);
       const refreshToken = await tokens.refresh.cria(req.user.id);
-      res.set("Authorization", accessToken);
+      res.set('Authorization', accessToken);
       res.status(200).json({ refreshToken });
     } catch (err) {
       res.status(500).json({ message: err.message });
