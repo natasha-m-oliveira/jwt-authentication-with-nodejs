@@ -1,4 +1,4 @@
-const validacoes = require('../validacoes-comuns');
+const validacoes = require('../validacoesComuns');
 
 class Post {
   constructor(post) {

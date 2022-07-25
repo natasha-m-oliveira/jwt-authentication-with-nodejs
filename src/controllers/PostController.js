@@ -1,28 +1,34 @@
-const { InvalidArgumentError, InternalServerError } = require('../erros');
 const { PostServices } = require('../services');
 const postServices = new PostServices();
 
 class PostController {
-  static async getAllPosts(req, res) {
+  static async getAllPosts(req, res, next) {
     try {
-      const posts = await postServices.getAllRecords();
+      let posts;
+      if (req.authenticated) {
+        posts = await postServices.getAllRecords();
+      } else {
+        posts = await postServices.getAllRecords(
+          `titulo, SUBSTR(conteudo, 1, 10) || '... Assina para ler mais.'  conteudo`
+        );
+      }
       res.json(posts);
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      next(err);
     }
   }
 
-  static async getPostsByUsuario(req, res) {
+  static async getPostsByUsuario(req, res, next) {
     try {
       const autor = req.user.id;
-      const posts = await postServices.getAllRecords({ autor });
+      const posts = await postServices.getAllRecords('*', { autor });
       res.json(posts);
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      next(err);
     }
   }
 
-  static async createPost(req, res) {
+  static async createPost(req, res, next) {
     try {
       const autor = req.user.id;
       const { titulo, conteudo } = req.body;
@@ -30,17 +36,11 @@ class PostController {
 
       res.status(201).send();
     } catch (err) {
-      if (err instanceof InvalidArgumentError) {
-        res.status(422).json({ message: err.message });
-      } else if (err instanceof InternalServerError) {
-        res.status(500).json({ message: err.message });
-      } else {
-        res.status(500).json({ message: err.message });
-      }
+      next(err);
     }
   }
 
-  static async updatePost(req, res) {
+  static async updatePost(req, res, next) {
     try {
       const id = req.params.id;
       const newData = req.body;
@@ -48,19 +48,16 @@ class PostController {
       await postServices.updateRecord(newData, id);
       res.send();
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      next(err);
     }
   }
 
-  static async deletePost(req, res) {
+  static async deletePost(req, res, next) {
     try {
-      await postServices.deleteRecord({
-        id: req.params.id,
-        autor: req.user.id,
-      });
+      await postServices.deleteRecord({ id: req.params.id });
       res.send();
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      next(err);
     }
   }
 }

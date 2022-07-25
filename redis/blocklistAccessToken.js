@@ -1,9 +1,9 @@
 const { createClient } = require("redis");
 const jwt = require("jsonwebtoken");
 const { createHash } = require("crypto");
-const manipulaLista = require("./manupula-lista");
+const manipulaLista = require("./manupulaLista");
 
-const client = createClient({ prefix: "blocklist-access-token:" });
+const client = createClient({ prefix: "blocklistAccessToken:" });
 client.on("connect", () => console.log("Connected to Redis!"));
 client.on("error", (err) => console.log("Redis Client Error", err));
 client.connect();

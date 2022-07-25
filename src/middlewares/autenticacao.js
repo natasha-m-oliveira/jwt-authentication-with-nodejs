@@ -5,17 +5,12 @@ const tokens = require('../tokens');
 module.exports = {
   local(req, res, next) {
     passport.authenticate('local', { session: false }, (err, usuario, info) => {
-      if (err && err.name === 'InvalidArgumentError') {
-        return res.status(401).json({ message: err.message });
-      }
       if (err) {
-        return res.status(500).json({ message: err.message });
-      }
-      if (!usuario) {
-        return res.status(401).json();
+        return next(err);
       }
 
       req.user = usuario;
+      req.authenticated = true;
       return next();
     })(req, res, next);
   },
@@ -25,18 +20,8 @@ module.exports = {
       'bearer',
       { session: false },
       (err, usuario, info) => {
-        if (err && err.name === 'JsonWebTokenError') {
-          return res.status(401).json({ message: err.message });
-        }
-
-        if (err && err.name === 'TokenExpiredError') {
-          return res
-            .status(401)
-            .json({ message: err.message, expiredAt: err.expiredAt });
-        }
-
         if (err) {
-          return res.status(500).json({ err: err.message });
+          return next(err);
         }
 
         if (!usuario) {
@@ -45,8 +30,9 @@ module.exports = {
 
         req.token = info.token;
         req.user = usuario;
+        req.authenticated = true;
         return next();
-      },
+      }
     )(req, res, next);
   },
 
@@ -57,13 +43,10 @@ module.exports = {
       const id = await tokens.refresh.verifica(refreshToken);
       await tokens.refresh.invalida(refreshToken);
 
-      req.user = await usuario.getOneRecord({ id });
+      req.user = await usuario.getOneRecord('*', { id });
       return next();
     } catch (err) {
-      if (err.name === 'InvalidArgumentError') {
-        return res.status(401).json({ message: err.message });
-      }
-      return res.status(500).json({ message: err.message });
+      return next(err);
     }
   },
 
@@ -72,18 +55,10 @@ module.exports = {
       const usuario = new Services('usuarios');
       const { token } = req.params;
       const id = await tokens.verificacaoEmail.verifica(token);
-      req.user = await usuario.getOneRecord({ id });
+      req.user = await usuario.getOneRecord('*', { id });
       next();
     } catch (err) {
-      if (err && err.name === 'JsonWebTokenError') {
-        return res.status(401).json({ message: err.message });
-      }
-      if (err && err.name === 'TokenExpiredError') {
-        return res
-          .status(401)
-          .json({ message: err.message, expiredAt: err.expiredAt });
-      }
-      return res.status(500).json({ message: err.message });
+      return next(err);
     }
   },
 };

@@ -1,38 +1,39 @@
 const { promisify } = require('util');
 const db = require('../../database');
+const { NotFound } = require('../erros');
 
 class Services {
-  constructor(modelName) {
-    this.modelName = modelName;
-  }
-
   #dbRun = promisify(db.run).bind(db);
   #dbGet = promisify(db.get).bind(db);
   #dbAll = promisify(db.all).bind(db);
 
-  async getAllRecords(where = {}) {
+  constructor(modelName) {
+    this.modelName = modelName;
+  }
+
+  async getAllRecords(columns = '*', where = {}) {
     const fields = Object.keys(where)
       .map((key) => `${key} = ?`)
       .join(', AND ');
     const values = Object.values(where);
     if (fields.length && values.length) {
       return this.#dbAll(
-        `SELECT * FROM ${this.modelName} WHERE ${fields}`,
-        values,
+        `SELECT ${columns} FROM ${this.modelName} WHERE ${fields}`,
+        values
       );
     }
-    return this.#dbAll(`SELECT * FROM ${this.modelName}`);
+    return this.#dbAll(`SELECT ${columns} FROM ${this.modelName}`);
   }
 
-  async getOneRecord(where = {}) {
+  async getOneRecord(columns = '*', where = {}) {
     const fields = Object.keys(where)
       .map((key) => `${key} = ?`)
       .join(', AND ');
     const values = Object.values(where);
 
     return this.#dbGet(
-      `SELECT * FROM ${this.modelName} WHERE ${fields} LIMIT 1`,
-      values,
+      `SELECT ${columns} FROM ${this.modelName} WHERE ${fields} LIMIT 1`,
+      values
     );
   }
 
@@ -44,11 +45,15 @@ class Services {
     return this.#dbRun(
       `INSERT INTO ${this.modelName} (${fields}) 
         VALUES (${expectedValues})`,
-      values,
+      values
     );
   }
 
   async updateRecord(newData = {}, id = 0) {
+    const row = await this.getOneRecord('*', { id });
+    if (!row) {
+      throw new NotFound(this.modelName);
+    }
     const fields = Object.keys(newData)
       .map((key) => `${key} = ?`)
       .join(', ');
@@ -61,6 +66,10 @@ class Services {
   }
 
   async deleteRecord(where = {}) {
+    const row = await this.getOneRecord('*', where);
+    if (!row) {
+      throw new NotFound(this.modelName);
+    }
     const fields = Object.keys(where)
       .map((key) => `${key} = ?`)
       .join(' AND ');

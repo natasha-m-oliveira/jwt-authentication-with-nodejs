@@ -1,24 +1,24 @@
-const tokens = require("../tokens");
+const tokens = require('../tokens');
 
 class AuteticationController {
-  static async login(req, res) {
+  static async login(req, res, next) {
     try {
       const accessToken = tokens.access.cria(req.user.id);
       const refreshToken = await tokens.refresh.cria(req.user.id);
-      res.set("Authorization", accessToken);
+      res.set('Authorization', accessToken);
       res.status(200).json({ refreshToken });
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      next(err);
     }
   }
 
-  static async logout(req, res) {
+  static async logout(req, res, next) {
     try {
       const token = req.token;
       await tokens.access.invalida(token);
       res.status(204).send();
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      next(err);
     }
   }
 }

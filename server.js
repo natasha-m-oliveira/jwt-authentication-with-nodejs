@@ -2,9 +2,9 @@ const express = require("express");
 const routes = require("./src/routes");
 require("dotenv").config();
 require("./database");
-require("./src/estrategias-autenticacao");
-require("./redis/blocklist-access-token");
-require("./redis/allowlist-refresh-token");
+require("./src/estrategiasAutenticacao");
+require("./redis/blocklistAccessToken");
+require("./redis/allowlistRefreshToken");
 
 const port = 3000;
 const app = express();

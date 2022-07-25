@@ -2,8 +2,8 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const moment = require('moment');
 const { InvalidArgumentError } = require('./erros');
-const allowlistRefreshToken = require('../redis/allowlist-refresh-token');
-const blocklistAccessToken = require('../redis/blocklist-access-token');
+const allowlistRefreshToken = require('../redis/allowlistRefreshToken');
+const blocklistAccessToken = require('../redis/blocklistAccessToken');
 
 function criaTokenJWT(id, [tempoQuantidade, tempoUnidade]) {
   const payload = { id };

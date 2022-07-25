@@ -2,6 +2,7 @@ const Usuario = require('../models/Usuario');
 const Services = require('./Services');
 const tokens = require('../tokens');
 const { EmailVerificacao } = require('../emails');
+const { InternalServerError } = require('../erros');
 
 class UsuarioServices extends Services {
   constructor() {
@@ -13,15 +14,21 @@ class UsuarioServices extends Services {
     return `${baseUrl}${rota}${token}`;
   }
 
-  async createRecord({ nome, email, senha }) {
-    const alreadyRegistered = await super.getOneRecord({ email });
+  async createRecord({ nome, email, senha, cargo }) {
+    const alreadyRegistered = await super.getOneRecord('*', { email });
     if (alreadyRegistered) {
       throw new InternalServerError('E-mail já cadastrado.');
     }
-    const usuario = new Usuario({ nome, email, senha, emailVerificado: false });
+    const usuario = new Usuario({
+      nome,
+      email,
+      senha,
+      emailVerificado: false,
+      cargo,
+    });
     await usuario.valida();
     await super.createRecord(usuario);
-    const { id } = await super.getOneRecord({ email });
+    const { id } = await super.getOneRecord('*', { email });
     usuario.setId(id);
 
     const token = tokens.verificacaoEmail.cria(usuario.id);
