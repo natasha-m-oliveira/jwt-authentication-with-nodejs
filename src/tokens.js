@@ -100,4 +100,14 @@ module.exports = {
       return verificaTokenJWT(token, this.nome);
     },
   },
+  redefinicaoSenha: {
+    nome: 'Redefinição de senha',
+    expiracao: [1, 'h'],
+    cria(id) {
+      return criaTokenJWT(id, this.expiracao);
+    },
+    verifica(token) {
+      return verificaTokenJWT(token, this.nome);
+    },
+  },
 };

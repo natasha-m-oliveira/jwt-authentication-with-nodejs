@@ -61,4 +61,16 @@ module.exports = {
       return next(err);
     }
   },
+
+  async redefinicaoSenha(req, res, next) {
+    try {
+      const usuario = new Services('usuarios');
+      const { token } = req.params;
+      const id = await tokens.redefinicaoSenha.verifica(token);
+      req.user = await usuario.getOneRecord('*', { id });
+      next();
+    } catch (err) {
+      return next(err);
+    }
+  },
 };

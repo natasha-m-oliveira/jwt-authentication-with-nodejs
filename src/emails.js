@@ -41,13 +41,61 @@ class EmailVerificacao extends Email {
     super();
     this.from = 'Blog do Código <noreplay@blogdocodigo.com.br>';
     this.to = usuario.email;
-    this.subject = 'Verificação de e-mail';
-    this.text = `Olá! Verifique seu e-mail aqui: ${endereco}`;
+    this.subject = 'Confirmação de E-mail';
+    this.text = `Bem-vindo(a), ${usuario.nome}. Confirme seu e-mail (${usuario.email}) rapidinho para que você possar continuar usando o Blog do Código. É só clicar no botão abaixo ;) ${endereco}`;
     this.html = `
-      <h1>Olá!</h1>
-      <p>Verifique seu e-mail aqui: <a href="${endereco}">${endereco}</a></p>
+      <h1>Bem-vindo(a), ${usuario.nome}.</h1>
+      <p>Confirme seu e-mail (${usuario.email}) rapidinho para que você possar continuar usando o Blog do Código. É só clicar no botão abaixo ;)</p>
+      <a
+        href="${endereco}"
+        style="background-color:#0069d9;
+          border:1px solid #0062cc;
+          border-color:#0062cc;
+          border-radius:30px;
+          border-width:1px;
+          color:#ffffff;
+          display:inline-block;
+          font-size:14px;
+          font-weight:bold;
+          letter-spacing:0px;
+          line-height:normal;
+          padding:12px 45px 12px 45px;
+          text-align:center;
+          text-decoration:none;
+          border-style:solid">Confirmar e-mail</a>
     `;
   }
 }
 
-module.exports = { EmailVerificacao };
+class EmailRedefinicaoSenha extends Email {
+  constructor(usuario, endereco) {
+    super();
+    this.from = 'Blog do Código <noreplay@blogdocodigo.com.br>';
+    this.to = usuario.email;
+    this.subject = 'Complete a solicitação de redefinição de senha';
+    this.text = `Olá, ${usuario.nome}. Vamos redefinir sua senha para que você continue lendo.`;
+    this.html = `
+      <h1>Olá, ${usuario.nome}.</h1>
+      <p>Vamos redefinir sua senha para que você continue lendo.</p>
+      <a
+        href="${endereco}"
+        style="background-color:#0069d9;
+          border:1px solid #0062cc;
+          border-color:#0062cc;
+          border-radius:30px;
+          border-width:1px;
+          color:#ffffff;
+          display:inline-block;
+          font-size:14px;
+          font-weight:bold;
+          letter-spacing:0px;
+          line-height:normal;
+          padding:12px 45px 12px 45px;
+          text-align:center;
+          text-decoration:none;
+          border-style:solid">Redefinir senha</a>
+    `;
+  }
+}
+
+module.exports = { EmailVerificacao, EmailRedefinicaoSenha };

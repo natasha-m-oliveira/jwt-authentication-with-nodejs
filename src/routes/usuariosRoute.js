@@ -16,6 +16,12 @@ router.get(
   UsuarioController.validateEmail
 );
 router.post('/usuario', UsuarioController.createUsuario);
+router.post('/usuario/esqueci-minha-senha', UsuarioController.forgotPassword);
+router.put(
+  '/usuario/redefinir-senha/:token',
+  autenticacao.redefinicaoSenha,
+  UsuarioController.resetPassword
+);
 router.put('/usuario/:id', UsuarioController.updateUsuario);
 router.delete(
   '/usuario/:id',

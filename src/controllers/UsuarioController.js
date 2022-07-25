@@ -35,6 +35,30 @@ class UsuarioController {
     }
   }
 
+  static async forgotPassword(req, res, next) {
+    try {
+      const { email } = req.body;
+      await usuarioServices.forgotPassword(email);
+      res.json({
+        message:
+          'Verifique o seu e-mail para prosseguir com a redefinição da senha.',
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async resetPassword(req, res, next) {
+    try {
+      const { senha } = req.body;
+      const { id } = req.user;
+      await usuarioServices.resetPassword(senha, id);
+      res.send({ message: 'Senha atualizada com sucesso.' });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   static async updateUsuario(req, res, next) {
     try {
       const newData = req.body;

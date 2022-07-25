@@ -1,7 +1,7 @@
 const Usuario = require('../models/Usuario');
 const Services = require('./Services');
 const tokens = require('../tokens');
-const { EmailVerificacao } = require('../emails');
+const { EmailVerificacao, EmailRedefinicaoSenha } = require('../emails');
 const { InternalServerError } = require('../erros');
 
 class UsuarioServices extends Services {
@@ -39,6 +39,25 @@ class UsuarioServices extends Services {
 
   async validateEmail(id) {
     await super.updateRecord({ emailVerificado: true }, id);
+  }
+
+  async forgotPassword(email) {
+    const usuario = await super.getOneRecord('*', { email });
+    if (usuario) {
+      const token = tokens.redefinicaoSenha.cria(usuario.id);
+      const endereco = this.geraEndereco('/usuario/redefinir-senha/', token);
+      const emailRedefinicaoSenha = new EmailRedefinicaoSenha(
+        usuario,
+        endereco
+      );
+      emailRedefinicaoSenha.enviaEmail().catch(console.log);
+    }
+  }
+
+  async resetPassword(senha, id) {
+    const usuario = new Usuario({ senha });
+    await usuario.setSenha();
+    await super.updateRecord({ senhaHash: usuario.senhaHash }, id);
   }
 }
 
