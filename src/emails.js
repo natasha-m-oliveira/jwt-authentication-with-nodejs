@@ -1,4 +1,4 @@
-const nodemailer = require("nodemailer");
+const nodemailer = require('nodemailer');
 
 const configuracaoEmailProducao = {
   host: process.env.EMAIL_HOST,
@@ -10,13 +10,13 @@ const configuracaoEmailProducao = {
 };
 
 const configuracaoEmailTeste = (contaTeste) => ({
-  host: "smtp.ethereal.email",
+  host: 'smtp.ethereal.email',
   auth: contaTeste,
 });
 
 async function criaConfiguracaoEmail() {
   console.log(process.env.NODE_ENV);
-  if (process.env.NODE_ENV === "production") {
+  if (process.env.NODE_ENV === 'production') {
     return configuracaoEmailProducao;
   } else {
     const contaTeste = await nodemailer.createTestAccount();
@@ -30,8 +30,8 @@ class Email {
     const transportador = nodemailer.createTransport(configuracaoEmail);
     const info = await transportador.sendMail(this);
 
-    if (process.env.NODE_ENV !== "production") {
-      console.log("URL: " + nodemailer.getTestMessageUrl(info));
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('URL: ' + nodemailer.getTestMessageUrl(info));
     }
   }
 }
@@ -39,9 +39,9 @@ class Email {
 class EmailVerificacao extends Email {
   constructor(usuario, endereco) {
     super();
-    this.from = "Blog do Código <noreplay@blogdocodigo.com.br>";
+    this.from = 'Blog do Código <noreplay@blogdocodigo.com.br>';
     this.to = usuario.email;
-    this.subject = "Verificação de e-mail";
+    this.subject = 'Verificação de e-mail';
     this.text = `Olá! Verifique seu e-mail aqui: ${endereco}`;
     this.html = `
       <h1>Olá!</h1>
