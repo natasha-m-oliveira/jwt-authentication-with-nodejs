@@ -28,7 +28,7 @@ class PostController {
       const { titulo, conteudo } = req.body;
       await postServices.createRecord({ titulo, conteudo, autor });
 
-      res.status(201).send(post);
+      res.status(201).send();
     } catch (err) {
       if (err instanceof InvalidArgumentError) {
         res.status(422).json({ message: err.message });

@@ -39,10 +39,11 @@ class Services {
   async createRecord(data = {}) {
     const fields = Object.keys(data).join(', ');
     const values = Object.values(data);
+    const expectedValues = Array(values.length).fill('?').join(', ');
 
     return this.#dbRun(
       `INSERT INTO ${this.modelName} (${fields}) 
-        VALUES (?, ?, ?, ?)`,
+        VALUES (${expectedValues})`,
       values,
     );
   }
@@ -62,7 +63,7 @@ class Services {
   async deleteRecord(where = {}) {
     const fields = Object.keys(where)
       .map((key) => `${key} = ?`)
-      .join(', AND ');
+      .join(' AND ');
     const values = Object.values(where);
 
     return this.#dbRun(`DELETE FROM ${this.modelName} WHERE ${fields}`, values);
